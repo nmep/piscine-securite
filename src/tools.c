@@ -19,7 +19,7 @@ int ft_strcmp(char *str1, char *str2)
     return ((unsigned char)str1[i] - (unsigned char)str2[i]);
 }
 
-int atoi (char *str)
+int ft_atoi (char *str)
 {
     int i = 0;
     int signe = 1;
@@ -63,7 +63,6 @@ int ft_strlen(char *str)
     return (i);
 }
 
-
 bool is_digit(char *str)
 {
     int i = 0;
@@ -86,4 +85,58 @@ bool is_dir(char *pathName)
     if (buffer.st_mode & __S_IFDIR)
         return (true);
     return (false);
+}
+
+void    print_data(t_spider data)
+{
+    printf("hostname = %s\n", data.hostname);
+    printf("pathName = %s\n", data.pathName);
+    printf("deepness = %d\n", data.deepness);
+    printf("b pathName = %d\n", data.pathNameSelected);
+    printf("b deepness = %d\n", data.deepnessSelected);
+}
+
+// la fonction ne free pas
+char    *strjoin(char *dest, char *src)
+{
+    char *str = malloc(sizeof(char) * (strlen(dest) + strlen(src) + 1));
+    if (!str)
+    {
+        fprintf(stderr, "Error malloc, strjoin\n");
+        return (NULL);
+    }
+    strcat(dest, src);
+    return (str);
+}
+
+// cherche to_find dans str et renvoie l'index de sa position (premiere occurance)
+int strstr_index(char *str, char *to_find)
+{
+    int i;
+    int j;
+
+    i = 0;
+    while (str[i])
+    {
+        if (str[i] == to_find[0])
+        {
+            j = 0;
+            while ((str[i] && to_find[j]) && str[i] == to_find[j])
+            {
+                if (to_find[j + 1] == 0)
+                    return (i - j + 1);
+                i++;
+                j++;
+            }
+            continue;
+        }
+        i++;
+    }
+    return (0);
+}
+
+void    ft_free(void *ptr)
+{
+    free(ptr);
+    ptr = NULL;
 }

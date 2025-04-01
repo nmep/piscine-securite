@@ -13,7 +13,7 @@ static bool parse_deepness(t_spider *data, char **av, int i)
                 fprintf(stderr, "Error [%s]: Do not suggest more then one deepness\n", av[i]);
                 return (false);
             }
-            data->deepness = atoi(av[i]);
+            data->deepness = ft_atoi(av[i]);
         }
         else
         {
