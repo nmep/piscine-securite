@@ -23,9 +23,6 @@ char    *get_hostName(char *url)
     for (int j = 0; url[i] && j < i; j++)
         hostname[j] = url[j];
     hostname[i] = 0;
-    printf("hostname apres = %s\n", hostname);
-    // printf("hostname avant = %s\n", hostname);
-    // printf("v de strncpy = %s\n", strncpy(hostname, url, i));
     return (hostname);
 }
 
@@ -51,13 +48,13 @@ bool    Url_to_Hostname(t_spider *data, char **av, int ac)
     }
     else if (https == 0)
     {
+        data->https = true;
         av[ac - 1] += 8;
         data->hostname = get_hostName(av[ac - 1]);
         if (!data->hostname)
             return (false);
         av[ac - 1] -= 8;
     }
-    (void)data;
     return (true);
 }
 
@@ -92,9 +89,7 @@ int main(int ac, char **av)
         ft_free(data.hostname);
         return (2);
     }
-    printf("\n\n");
     print_data(data);
-    printf("\n\n");
     if (!init_socket(&data))
     {
         ft_free(data.hostname);

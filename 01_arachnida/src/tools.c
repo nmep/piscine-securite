@@ -89,11 +89,14 @@ bool is_dir(char *pathName)
 
 void    print_data(t_spider data)
 {
+    printf("\n\n");
     printf("hostname = %s\n", data.hostname);
     printf("pathName = %s\n", data.pathName);
     printf("deepness = %d\n", data.deepness);
     printf("b pathName = %d\n", data.pathNameSelected);
     printf("b deepness = %d\n", data.deepnessSelected);
+    printf("b https = %d\n", data.https);
+    printf("\n\n");
 }
 
 // la fonction ne free pas
@@ -105,7 +108,8 @@ char    *strjoin(char *dest, char *src)
         fprintf(stderr, "Error malloc, strjoin\n");
         return (NULL);
     }
-    strcat(dest, src);
+    strcpy(str, dest);
+    strcat(str, src);
     return (str);
 }
 

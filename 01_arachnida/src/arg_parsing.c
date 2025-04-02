@@ -4,7 +4,6 @@ static bool parse_deepness(t_spider *data, char **av, int i)
 {
     if (data->deepnessSelected)
     {
-        printf("l is detected with %s\n", av[i]);
         if (is_digit(av[i]))
         {
             // eviter les doublons de propositions de profondeur
@@ -30,7 +29,6 @@ static bool parse_pathName(t_spider *data, char **av, int i)
 
     if (data->pathNameSelected)
     {
-        printf("p is detected with %s\n", av[i]);
         if (is_dir(av[i]))
         {
             if (!access(av[i], R_OK | W_OK))

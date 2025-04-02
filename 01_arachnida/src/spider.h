@@ -11,17 +11,20 @@
 #include <netdb.h>
 #include <sys/types.h>
 
+# include  "openssl/bio.h"
+# include  "openssl/ssl.h"
+# include  "openssl/err.h"
+
 typedef struct s_spider
 {
-    bool recursive;
+    bool   recursive;
+    bool   https;
 
     char   *hostname;
     char   pathName[1024];
     int    deepness;
     bool   pathNameSelected;
     bool   deepnessSelected;
-
-
 }   t_spider;
 
 /*  ############################################################# */
@@ -53,6 +56,7 @@ bool    is_dir(char *pathName);
 void    print_data(t_spider data);
 int     strstr_index(char *str, char *to_find);
 void    ft_free(void *ptr);
+char    *strjoin(char *dest, char *src);
 
 /*  ############################################################# */
 /* #                                                             #*/
@@ -63,5 +67,17 @@ void    ft_free(void *ptr);
 /*  ############################################################# */
 
 bool    init_socket(t_spider *data);
+bool    http_get_addr_info(int *s,  struct addrinfo *hints,  struct addrinfo *result);
+bool    https_get_addr_info(t_spider *data, int *s,  struct addrinfo *hints,  struct addrinfo *result);
+bool    connect_socket( struct addrinfo *rp,  struct addrinfo *result, int *sfd);
 bool    send_request(t_spider *data, int sfd);
 
+/*  ############################################################# */
+/* #                                                             #*/
+/* #                                                             #*/
+/* #                         OPENSSL                             #*/
+/* #                                                             #*/
+/* #                                                             #*/
+/*  ############################################################# */
+
+bool    https_request(t_spider *data);
