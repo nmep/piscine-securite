@@ -16,7 +16,7 @@ SSL_CTX    *seting_up_ssl_pointer()
     return (ctx);
 }
 
-BIO     *seting_up_bio_object(SSL **ssl, SSL_CTX *ctx)
+BIO     *seting_up_bio_object(SSL **ssl, SSL_CTX *ctx, t_spider *data)
 {
     BIO *bio = BIO_new_ssl_connect(ctx);
     if (!bio)
@@ -26,6 +26,7 @@ BIO     *seting_up_bio_object(SSL **ssl, SSL_CTX *ctx)
     }
     BIO_get_ssl(bio, ssl);
     SSL_set_mode(*ssl, SSL_MODE_AUTO_RETRY);
+    SSL_set_tlsext_host_name(*ssl, data->hostname);
     return (bio);
 }
 
@@ -37,7 +38,7 @@ bool    open_secure_connection(BIO *bio, t_spider *data, SSL_CTX *ctx)
         fprintf(stderr, "Error malloc, open_secure_connection\n");
         return (false);
     }
-
+    
     // attempt connection
     BIO_set_conn_hostname(bio, host_port);
     free(host_port);
@@ -92,8 +93,11 @@ bool    bio_read(t_spider *data, BIO *bio)
         buffer[bytes_reads] = 0;
         data->html_page = strjoin(data->html_page, buffer, true);
         if (!data->html_page)
-            return (false);
+        return (false);
     }
+    
+    if (!find_images(data))
+        return (false);
     return (true);
 }
 
@@ -115,7 +119,7 @@ bool    https_request(t_spider *data)
     ctx = seting_up_ssl_pointer();
     if (!ctx)
         return (false);
-    bio = seting_up_bio_object(&ssl, ctx);
+    bio = seting_up_bio_object(&ssl, ctx, data);
     if (!bio)
         return (SSL_CTX_free(ctx), false);
 

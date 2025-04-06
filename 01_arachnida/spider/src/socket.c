@@ -32,13 +32,14 @@ bool    getHtmlPage(t_spider *data, int sfd)
         if (!data->html_page)
             return (false);
     }
-    printf("[%s]", data->html_page);
+    // find_images(data);
+    printf("[%s]\n", data->html_page);
     return (true);
 }
 
-bool    init_socket(t_spider *data)
+bool    scrapper(t_spider *data)
 {
-    int sfd = 0, s = 0;
+    int s = 0;
     struct addrinfo hints, *result = NULL, *rp = NULL;
     
     memset(&hints, 0, sizeof(hints));
@@ -50,14 +51,13 @@ bool    init_socket(t_spider *data)
     // -------
     if (data->https)
     {
-        // if (!https_get_addr_info(data, &s, &hints, result) || !connect_socket(rp, result, &sfd))
-        //     return (false);
-        // // faire sur du https
+        printf("https\n");
         if (!https_request(data))
             return (false);
     }
     else
     {
+        printf("http\n");
         // get addr info
         s = getaddrinfo("httpforever.com", "80", &hints, &result);
         if (s != 0) {
@@ -68,31 +68,32 @@ bool    init_socket(t_spider *data)
         // connect
 
         for (rp = result; rp != NULL; rp = rp->ai_next) {
-            sfd = socket(rp->ai_family, rp->ai_socktype, 
+            data->site_fd = socket(rp->ai_family, rp->ai_socktype, 
             rp->ai_protocol);
-            if (sfd == -1) {
-                fprintf(stderr, "Socket error sfd = -1\n");
+            if (data->site_fd == -1) {
+                fprintf(stderr, "Socket error data->site_fd = -1\n");
                 continue;
             }
-            if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1)
+            if (connect(data->site_fd, rp->ai_addr, rp->ai_addrlen) != -1)
                 break;
-            close(sfd);
+            close(data->site_fd);
         }
         freeaddrinfo(result);
         if (rp == NULL) {
             fprintf(stderr, "Could not connect\n");
-            close(sfd);
+            close(data->site_fd);
             return (false);
         }
         // send
-        if (!send_request(data, sfd))
-            return (close(sfd), false);
-        if (!getHtmlPage(data, sfd))
-            return (close(sfd), false);
+        if (!send_request(data, data->site_fd))
+            return (close(data->site_fd), false);
+        if (!getHtmlPage(data, data->site_fd))
+            return (close(data->site_fd), false);
     }
-    close(sfd);
-    // si -r est present faire en recursive sinon en iteratif
     
+    // si -r est present faire en recursive sinon en iteratif
+
+
     // printf("recv = %s\n", buff);
     return (true);
 }

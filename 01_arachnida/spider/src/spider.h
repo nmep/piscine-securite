@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -20,12 +21,14 @@ typedef struct s_spider
     bool   recursive;
     bool   https;
 
+    int    deepness;
+    int    site_fd;
     char   *hostname;
     char   pathName[1024];
-    int    deepness;
     bool   pathNameSelected;
     bool   deepnessSelected;
     char   *html_page;
+    char   **img_name_tab;
 }   t_spider;
 
 /*  ############################################################# */
@@ -47,7 +50,8 @@ bool    arg_pars(char **av, t_spider *data);
 /* #                                                             #*/
 /*  ############################################################# */
 
-int ft_strlen(char *str);
+int     ft_strlen(char *str);
+int     ft_strlen_2D(char **str);
 void    usage(void);
 int     ft_strcmp(char *str1, char *str2);
 int     ft_atoi (char *str);
@@ -67,7 +71,6 @@ char    *strjoin(char *dest, char *src, bool free_dest);
 /* #                                                             #*/
 /*  ############################################################# */
 
-bool    init_socket(t_spider *data);
 bool    http_get_addr_info(t_spider *data, int *s,  struct addrinfo *hints,  struct addrinfo *result);
 bool    https_get_addr_info(t_spider *data, int *s,  struct addrinfo *hints,  struct addrinfo *result);
 bool    connect_socket(struct addrinfo *result, int *sfd);
@@ -82,3 +85,16 @@ bool    send_request(t_spider *data, int sfd);
 /*  ############################################################# */
 
 bool    https_request(t_spider *data);
+
+
+/*  ############################################################# */
+/* #                                                             #*/
+/* #                                                             #*/
+/* #                         SCRAPPER                            #*/
+/* #                                                             #*/
+/* #                                                             #*/
+/*  ############################################################# */
+
+
+bool    scrapper(t_spider *data);
+bool    find_images(t_spider *data);

@@ -7,8 +7,17 @@
 
 void    free_data(t_spider *data)
 {
+    int i = -1;
+
+    close(data->site_fd);
     free(data->hostname);
     free(data->html_page);
+    if (data->img_name_tab)
+    {
+        while (data->img_name_tab[++i])
+            free(data->img_name_tab[i]);
+    }
+
 }
 
 char    *get_hostName(char *url)
@@ -18,8 +27,10 @@ char    *get_hostName(char *url)
 
     while (url[i] && url[i] != '/')
         i++;
-    if (url[i] == 0)
+    if (url[i] == 0) {
+        fprintf(stderr, "Error Url: no '/' found at the end [%s]\n", url);
         return (NULL);
+    }
     hostname = malloc(sizeof(char) * (i + 1));
     if (!hostname)
     {
@@ -98,7 +109,7 @@ int main(int ac, char **av)
 
     print_data(data);
 
-    if (!init_socket(&data))
+    if (!scrapper(&data))
     {
         free_data(&data);
         return (2);
