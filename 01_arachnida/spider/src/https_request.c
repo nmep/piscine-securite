@@ -95,9 +95,9 @@ bool    bio_read(t_spider *data, BIO *bio)
         if (!data->html_page)
         return (false);
     }
-    
-    if (!find_images(data))
-        return (false);
+    get_links(data);
+    // if (!find_images(data))
+    //     return (false);
     return (true);
 }
 

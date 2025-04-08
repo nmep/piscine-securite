@@ -3,7 +3,7 @@
 bool    send_request(t_spider *data, int sfd)
 {
     char request[1024];
-    if (snprintf(request, sizeof(request), 
+    if (snprintf(request, sizeof(request),
             "GET / HTTP/1.1\r\n"
             "Host: %s\r\n"
             "Connection: close\r\n"
@@ -32,6 +32,8 @@ bool    getHtmlPage(t_spider *data, int sfd)
         if (!data->html_page)
             return (false);
     }
+    if (!get_links(data))
+        return (false);
     // find_images(data);
     printf("[%s]\n", data->html_page);
     return (true);

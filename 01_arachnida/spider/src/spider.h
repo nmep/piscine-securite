@@ -29,6 +29,7 @@ typedef struct s_spider
     bool   deepnessSelected;
     char   *html_page;
     char   **img_name_tab;
+    char   **links_name_tab;
 }   t_spider;
 
 /*  ############################################################# */
@@ -41,7 +42,6 @@ typedef struct s_spider
 
 bool    arg_pars(char **av, t_spider *data);
 
-
 /*  ############################################################# */
 /* #                                                             #*/
 /* #                                                             #*/
@@ -53,6 +53,7 @@ bool    arg_pars(char **av, t_spider *data);
 int     ft_strlen(char *str);
 int     ft_strlen_2D(char **str);
 void    usage(void);
+bool    err_msg(const char *err_msg);
 int     ft_strcmp(char *str1, char *str2);
 int     ft_atoi (char *str);
 void    ft_strcpy(char *src, char *dest);
@@ -97,4 +98,5 @@ bool    https_request(t_spider *data);
 
 
 bool    scrapper(t_spider *data);
+bool    get_links(t_spider *data);
 bool    find_images(t_spider *data);

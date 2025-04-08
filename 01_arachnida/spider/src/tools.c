@@ -32,6 +32,12 @@ void    usage(void)
                     "\tIf not specified, ./data/ will be used.\n");
 }
 
+bool    err_msg(const char *err_msg)
+{
+    fprintf(stderr, "%s", err_msg);
+    return false;
+}
+
 int ft_strcmp(char *str1, char *str2)
 {
     int i = 0;
