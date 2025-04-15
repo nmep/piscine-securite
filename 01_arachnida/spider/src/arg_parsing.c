@@ -2,6 +2,8 @@
 
 static bool parse_deepness(t_spider *data, char **av, int i)
 {
+    if (!strncmp(av[i], "http", 4)) 
+        return (true);
     if (data->deepnessSelected)
     {
         if (is_digit(av[i]))
@@ -20,7 +22,7 @@ static bool parse_deepness(t_spider *data, char **av, int i)
             perror("Stat Error");
         }
     }
-    return true;
+    return (true);
 }
 
 static bool parse_pathName(t_spider *data, char **av, int i)
@@ -111,8 +113,6 @@ static bool    check_option(char **av, t_spider *data)
 
 bool    arg_pars(char **av, t_spider *data)
 {
-    // int i = 0;
-
     // check les options (leurs positions et si oui ou non elles sont valide 
     // attention au doublon)
     (void)data;

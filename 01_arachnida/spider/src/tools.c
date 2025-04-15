@@ -82,6 +82,19 @@ void    ft_strcpy(char *src, char *dest)
     dest[i] = 0;
 }
 
+void    ft_strncpy(char *dest, char *src, int n)
+{
+    int i = 0;
+
+
+    while (src[i] && i < n)
+    {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = 0;
+}
+
 bool is_digit(char *str)
 {
     int i = 0;
@@ -165,4 +178,19 @@ void    ft_free(void *ptr)
 {
     free(ptr);
     ptr = NULL;
+}
+
+bool    checkDouble(char **links_name_tab, char *new_link)
+{
+    int i = 0;
+
+    if (!links_name_tab)
+        return (true);
+    while (links_name_tab[i])
+    {
+        if (!strcmp(links_name_tab[i], new_link))
+            return (false);
+        i++;
+    }
+    return (true);
 }

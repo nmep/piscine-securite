@@ -41,6 +41,7 @@ typedef struct s_spider
 /*  ############################################################# */
 
 bool    arg_pars(char **av, t_spider *data);
+bool    Url_to_Hostname(t_spider *data, char *url);
 
 /*  ############################################################# */
 /* #                                                             #*/
@@ -50,19 +51,26 @@ bool    arg_pars(char **av, t_spider *data);
 /* #                                                             #*/
 /*  ############################################################# */
 
+void    usage(void);
+void    print_data(t_spider data);
+bool    err_msg(const char *err_msg);
+
 int     ft_strlen(char *str);
 int     ft_strlen_2D(char **str);
-void    usage(void);
-bool    err_msg(const char *err_msg);
 int     ft_strcmp(char *str1, char *str2);
-int     ft_atoi (char *str);
 void    ft_strcpy(char *src, char *dest);
+void    ft_strncpy(char *src, char *dest, int n);
+
+int     ft_atoi (char *str);
+
 bool    is_digit(char *str);
 bool    is_dir(char *pathName);
-void    print_data(t_spider data);
 int     strstr_index(char *str, char *to_find);
+bool    checkDouble(char **links_name_tab, char *new_link);
+
 void    ft_free(void *ptr);
 char    *strjoin(char *dest, char *src, bool free_dest);
+
 
 /*  ############################################################# */
 /* #                                                             #*/
@@ -75,7 +83,7 @@ char    *strjoin(char *dest, char *src, bool free_dest);
 bool    http_get_addr_info(t_spider *data, int *s,  struct addrinfo *hints,  struct addrinfo *result);
 bool    https_get_addr_info(t_spider *data, int *s,  struct addrinfo *hints,  struct addrinfo *result);
 bool    connect_socket(struct addrinfo *result, int *sfd);
-bool    send_request(t_spider *data, int sfd);
+bool    send_request(t_spider *data, int sfd, char *path);
 
 /*  ############################################################# */
 /* #                                                             #*/
@@ -98,5 +106,6 @@ bool    https_request(t_spider *data);
 
 
 bool    scrapper(t_spider *data);
+bool    ft_parse_links(char links[500]);
 bool    get_links(t_spider *data);
 bool    find_images(t_spider *data);

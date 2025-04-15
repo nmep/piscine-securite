@@ -10,14 +10,23 @@ void    free_data(t_spider *data)
     int i = -1;
 
     close(data->site_fd);
-    free(data->hostname);
-    free(data->html_page);
+    if (data->hostname)
+        free(data->hostname);
+    if (data->html_page)
+        free(data->html_page);
     if (data->img_name_tab)
     {
         while (data->img_name_tab[++i])
             free(data->img_name_tab[i]);
+        free(data->img_name_tab);
     }
-
+    if (data->links_name_tab)
+    {
+        i = -1;
+        while (data->links_name_tab[++i])
+            free(data->links_name_tab[i]);
+        free(data->links_name_tab);
+    }
 }
 
 char    *get_hostName(char *url)
@@ -43,12 +52,12 @@ char    *get_hostName(char *url)
     return (hostname);
 }
 
-bool    Url_to_Hostname(t_spider *data, char **av, int ac)
+bool    Url_to_Hostname(t_spider *data, char *url)
 {
     int http, https;
 
-    https = strncmp("https://", av[ac - 1], 8);
-    http = strncmp("http://", av[ac - 1], 7);
+    https = strncmp("https://", url, 8);
+    http = strncmp("http://", url, 7);
 
     if (http != 0 && https != 0)
     {
@@ -57,20 +66,20 @@ bool    Url_to_Hostname(t_spider *data, char **av, int ac)
     }
     if (http == 0)
     {
-        av[ac - 1] += 7;
-        data->hostname = get_hostName(av[ac - 1]);
+        url += 7;
+        data->hostname = get_hostName(url);
         if (!data->hostname)
             return (false);
-        av[ac - 1] -= 7;
+        url -= 7;
     }
     else if (https == 0)
     {
         data->https = true;
-        av[ac - 1] += 8;
-        data->hostname = get_hostName(av[ac - 1]);
+        url += 8;
+        data->hostname = get_hostName(url);
         if (!data->hostname)
             return (false);
-        av[ac - 1] -= 8;
+        url -= 8;
     }
     return (true);
 }
@@ -80,7 +89,7 @@ bool    init_data(t_spider *data, char **av, int ac)
     memset(data, 0, sizeof(*data));
     data->deepness = 5;
     ft_strcpy("../data", data->pathName);
-    if (!Url_to_Hostname(data, av, ac))
+    if (!Url_to_Hostname(data, av[ac - 1]))
         return (false);
     return (true);
 }
@@ -100,7 +109,7 @@ int main(int ac, char **av)
         usage();
         return (2);
     }
-
+    
     if (!arg_pars(av, &data))
     {
         free_data(&data);
@@ -120,3 +129,9 @@ int main(int ac, char **av)
     free_data(&data);
     return (0);
 }
+
+// lance le programme j'ai modif les links pour avoir que le path
+// il faut maintenant faire des requetes avec jusu'a ce que ca marche parmis 
+// tout les path que j'ai, je garde le fd que j'ai enregistre au debut
+// est ce que j'ai besoin de mettre un slash devant ?
+// il faut refactore pour que ca puisse envoyer assez de requete

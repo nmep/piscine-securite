@@ -83,9 +83,26 @@ bool    bio_write(t_spider *data, BIO *bio)
     return (true);
 }
 
+bool    bio_write_to_url(t_spider *data, BIO *bio, char *url)
+{
+    char request[1024];
+
+    snprintf(request, sizeof(request),
+        "GET /%s HTTP/1.1\r\n"
+        "Host: %s\r\n"
+        "Connection: keep alive\r\n"
+        "\r\n", url, data->hostname);
+    if (BIO_write(bio, request, ft_strlen(request)) <= 0)
+    {
+        fprintf(stderr, "Error syscall, BIO write failed with %s\n", url);
+        return (false);
+    }
+    return (true);
+}
+
 bool    bio_read(t_spider *data, BIO *bio)
 {
-    char buffer[4096];
+    char buffer[16384];
     int bytes_reads;
 
     while ((bytes_reads = BIO_read(bio, buffer, sizeof(buffer) - 1)) > 0)
@@ -95,9 +112,11 @@ bool    bio_read(t_spider *data, BIO *bio)
         if (!data->html_page)
         return (false);
     }
-    get_links(data);
-    // if (!find_images(data))
-    //     return (false);
+    printf("j'apelle find images\n");
+    if (!get_links(data))
+        return (false);
+    if (!find_images(data))
+        return (false);
     return (true);
 }
 
@@ -129,12 +148,36 @@ bool    https_request(t_spider *data)
     if (!check_valid_certificate(ssl, ctx, bio))
         return (free_data(bio, ctx));
 
-    // write
     if (!bio_write(data, bio))
         return (free_data(bio, ctx));
     // read
+    printf("l'url / a fonctionner\n");
     if (!bio_read(data, bio))
         return (free_data(bio, ctx));
+
+    // write
+    // tant que je n'ai pas lu assez de page je continue
+    if (data->links_name_tab)
+    {
+        for (int i = 0; data->links_name_tab[i] && data->deepness > 0; i++)
+        {   
+            bio = seting_up_bio_object(&ssl, ctx, data);
+            if (!bio)
+                return (SSL_CTX_free(ctx), false);
+            if (!open_secure_connection(bio, data, ctx))
+                return (free_data(bio, ctx));
+            if (!check_valid_certificate(ssl, ctx, bio))
+                return (free_data(bio, ctx));
+            // read
+            if (!bio_write_to_url(data, bio, data->links_name_tab[i]))
+                continue;
+            printf("l'url %s a fonctionner\n", data->links_name_tab[i]);
+            bio_read(data, bio);
+            data->deepness--;
+        }
+    }
+    else
+        fprintf(stderr,"No links found in the index\n");
 
     SSL_CTX_free(ctx);
     BIO_free_all(bio);

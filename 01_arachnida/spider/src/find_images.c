@@ -1,15 +1,5 @@
 #include "spider.h"
 
-void    ft_strncpy(char *dest, char *src, int n)
-{
-    int i = 0;
-    for (; src[i] && i < n; i++)
-    {
-        dest[i] = src[i];
-    }
-    dest[i] = 0;
-}
-
 bool    ft_find_double_names(char *image_name_temp, t_spider *data)
 {
     int i = 0;
@@ -31,10 +21,7 @@ bool    check_double_image_before_allocate(t_spider *data, int occ, int i, int m
 
     int images_name_size = occ - i + mimes_size;
     if (images_name_size > 1999)
-    {
-        fprintf(stderr, "One has been skiped for havin a long name\n");
-        return (false);
-    }
+        return (fprintf(stderr, "Error: Image name is too long\n"), false);
     ft_strncpy(image_name_temp, data->html_page + i, images_name_size);
     if (!ft_find_double_names(image_name_temp, data))
         return (false);
@@ -46,7 +33,7 @@ bool    find_images_names(t_spider *data, int occ, int mimes_size)
     int i = occ;
     static int img_name_tab_size = 0;
     
-    while (i >= 0 && data->html_page[i - 1] && data->html_page[i - 1] != '"')
+    while (i >= 0 && data->html_page[i - 1] && (data->html_page[i - 1] != '"' && data->html_page[i - 1] != ','))
         i--;
 
     int images_name_size = occ - i + mimes_size;
@@ -77,9 +64,9 @@ bool    find_images_mimes(t_spider *data, const char *mimes, int mime_length)
     occ = data->html_page;
     while ((occ = strstr(occ, mimes)) != NULL)
     {
-            printf("occurence sur %s\n", mimes);
-            if (!find_images_names(data, occ - data->html_page, mime_length))
-                return (false);
+        printf("occ trouve\n");
+        if (!find_images_names(data, occ - data->html_page, mime_length))
+            return (false);
         occ++;
     }
     return (true);
@@ -88,7 +75,6 @@ bool    find_images_mimes(t_spider *data, const char *mimes, int mime_length)
 bool    find_images(t_spider *data)
 {
    // faire la recherche avec jpg
-    printf("html page = %s\n", data->html_page);
     if (!find_images_mimes(data, ".jpg", 4))
         return (false);
     if (!find_images_mimes(data, ".jpeg", 5))
@@ -100,16 +86,13 @@ bool    find_images(t_spider *data)
     if (!find_images_mimes(data, ".bmp", 4))
         return (false);
 
-    int i = 0;
-
     if (!data->img_name_tab)
-    {
-        printf("no images found\n");
-        return (true);
-    }
+        return (fprintf(stderr, "no images found\n\n answear:\n\n%s\n", data->html_page), true);
+        
+    int i = 0;
     while (data->img_name_tab[i])
     {
-        printf("image name [%d] = %s\n", i, data->img_name_tab[i]);
+        fprintf(stderr, "image name [%d] = %s\n", i, data->img_name_tab[i]);
         i++;
     }
     return (true);
