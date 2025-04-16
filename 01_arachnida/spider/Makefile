@@ -21,8 +21,8 @@ DEP = $(patsubst $(SRC_DIR)/%.c, $(DEP_DIR)/%.d, $(SRC))
 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	mkdir -p $(dir $@) $(DEP_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@ -MMD -MF $(DEP_DIR)/$*.d
 
 all: $(NAME)
 
