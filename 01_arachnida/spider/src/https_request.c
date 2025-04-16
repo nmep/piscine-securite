@@ -112,7 +112,6 @@ bool    bio_read(t_spider *data, BIO *bio)
         if (!data->html_page)
         return (false);
     }
-    printf("j'apelle find images\n");
     if (!get_links(data))
         return (false);
     if (!find_images(data))
@@ -151,7 +150,6 @@ bool    https_request(t_spider *data)
     if (!bio_write(data, bio))
         return (free_data(bio, ctx));
     // read
-    printf("l'url / a fonctionner\n");
     if (!bio_read(data, bio))
         return (free_data(bio, ctx));
 
@@ -171,7 +169,6 @@ bool    https_request(t_spider *data)
             // read
             if (!bio_write_to_url(data, bio, data->links_name_tab[i]))
                 continue;
-            printf("l'url %s a fonctionner\n", data->links_name_tab[i]);
             bio_read(data, bio);
             data->deepness--;
         }

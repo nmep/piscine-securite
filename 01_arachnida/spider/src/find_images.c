@@ -64,7 +64,6 @@ bool    find_images_mimes(t_spider *data, const char *mimes, int mime_length)
     occ = data->html_page;
     while ((occ = strstr(occ, mimes)) != NULL)
     {
-        printf("occ trouve\n");
         if (!find_images_names(data, occ - data->html_page, mime_length))
             return (false);
         occ++;
@@ -87,13 +86,6 @@ bool    find_images(t_spider *data)
         return (false);
 
     if (!data->img_name_tab)
-        return (fprintf(stderr, "no images found\n\n answear:\n\n%s\n", data->html_page), true);
-        
-    int i = 0;
-    while (data->img_name_tab[i])
-    {
-        fprintf(stderr, "image name [%d] = %s\n", i, data->img_name_tab[i]);
-        i++;
-    }
+        return (fprintf(stderr, "no images found\n\n"), true);
     return (true);
 }

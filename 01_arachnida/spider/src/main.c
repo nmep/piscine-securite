@@ -9,6 +9,7 @@ void    free_data(t_spider *data)
 {
     int i = -1;
 
+    printf("je free data\n");
     close(data->site_fd);
     if (data->hostname)
         free(data->hostname);
@@ -109,7 +110,7 @@ int main(int ac, char **av)
         usage();
         return (2);
     }
-    
+
     if (!arg_pars(av, &data))
     {
         free_data(&data);

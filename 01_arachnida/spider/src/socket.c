@@ -44,10 +44,11 @@ bool    getHtmlPage(t_spider *data, int sfd)
     {
         buff[bytesRead] = 0;
         data->html_page = strjoin(data->html_page, buff, true);
-        if (!data->html_page)
+        if (!data->html_page)   
             return (false);
     }
-    printf("html page = %s\n", data->html_page);   
+    if (!data->html_page)
+        return (fprintf(stderr, "Error no request recv\n"), false);
     if (!get_links(data))
         return (false);
     if (!find_images(data))
@@ -55,16 +56,35 @@ bool    getHtmlPage(t_spider *data, int sfd)
     return (true);
 }
 
-bool    request_on_other_http_page(t_spider *data)
+bool    request_on_other_http_page(t_spider *data, struct addrinfo *result, struct addrinfo *rp)
 {
     for (int i = 0; i < data->deepness && data->links_name_tab[i]; i++)
     {
-        printf("test request on %s\n", data->links_name_tab[i]);
+        for (rp = result; rp != NULL; rp = rp->ai_next) {
+            data->site_fd = socket(rp->ai_family, rp->ai_socktype, 
+            rp->ai_protocol);
+            if (data->site_fd == -1) {
+                fprintf(stderr, "Socket error data->site_fd = -1\n");
+                continue;
+            }
+            if (connect(data->site_fd, rp->ai_addr, rp->ai_addrlen) != -1)
+                break;
+            close(data->site_fd);
+        }
+        if (rp == NULL) {
+            fprintf(stderr, "Could not connect\n");
+            close(data->site_fd);
+            return (false);
+        }
+        // send
+        printf("je fais une requete sur %s\n", data->links_name_tab[i]);
         if (!send_request(data, data->site_fd, data->links_name_tab[i]))
-            continue;
-        printf("succed\n");
+            return (close(data->site_fd), false);
         if (!getHtmlPage(data, data->site_fd))
             return (close(data->site_fd), false);
+        free(data->html_page);
+        data->html_page = NULL;
+        close(data->site_fd);
     }
     return (true);
 }
@@ -83,15 +103,12 @@ bool    scrapper(t_spider *data)
     // -------
     if (data->https)
     {
-        printf("https\n");
         if (!https_request(data))
             return (false);
     }
     else
     {
         // get addr info
-        printf("http\n");
-        printf("hostname = %s\n", data->hostname);
         s = getaddrinfo(data->hostname, "80", &hints, &result);
         if (s != 0) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
@@ -110,7 +127,6 @@ bool    scrapper(t_spider *data)
                 break;
             close(data->site_fd);
         }
-        freeaddrinfo(result);
         if (rp == NULL) {
             fprintf(stderr, "Could not connect\n");
             close(data->site_fd);
@@ -123,17 +139,23 @@ bool    scrapper(t_spider *data)
             return (close(data->site_fd), false);
         free(data->html_page);
         data->html_page = NULL;
+        close(data->site_fd);
 
-        request_on_other_http_page(data);
-        if (data->links_name_tab)
-        {
-            for (int i = 0; data->links_name_tab[i]; i++) {
-                printf("links name tab [%d] = %s\n", i, data->links_name_tab[i]);
-            }
-        }
+        if (!request_on_other_http_page(data, result, rp))
+            return (freeaddrinfo(result), false);
+        freeaddrinfo(result);
     }
-    
+
     // si -r est present faire en recursive sinon en iteratif
+    // if (data->recursive)
+    // {
+    //     // download en recursif
+    //     ft_recursive_download(data);
+    // }
+    // else
+    //     // download en iteratif
+    //     ft_iterative_download(data);
+
 
 
     return (true);
