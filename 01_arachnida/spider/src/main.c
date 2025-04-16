@@ -9,7 +9,6 @@ void    free_data(t_spider *data)
 {
     int i = -1;
 
-    printf("je free data\n");
     close(data->site_fd);
     if (data->hostname)
         free(data->hostname);
@@ -89,7 +88,7 @@ bool    init_data(t_spider *data, char **av, int ac)
 {
     memset(data, 0, sizeof(*data));
     data->deepness = 5;
-    ft_strcpy("../data", data->pathName);
+    ft_strcpy("./data", data->pathName);
     if (!Url_to_Hostname(data, av[ac - 1]))
         return (false);
     return (true);

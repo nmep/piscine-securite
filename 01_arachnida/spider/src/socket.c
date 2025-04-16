@@ -77,7 +77,6 @@ bool    request_on_other_http_page(t_spider *data, struct addrinfo *result, stru
             return (false);
         }
         // send
-        printf("je fais une requete sur %s\n", data->links_name_tab[i]);
         if (!send_request(data, data->site_fd, data->links_name_tab[i]))
             return (close(data->site_fd), false);
         if (!getHtmlPage(data, data->site_fd))
@@ -143,20 +142,36 @@ bool    scrapper(t_spider *data)
 
         if (!request_on_other_http_page(data, result, rp))
             return (freeaddrinfo(result), false);
-        freeaddrinfo(result);
-    }
+        }
 
-    // si -r est present faire en recursive sinon en iteratif
-    // if (data->recursive)
-    // {
-    //     // download en recursif
-    //     ft_recursive_download(data);
-    // }
-    // else
-    //     // download en iteratif
-    //     ft_iterative_download(data);
+        for (int i = 0; data->links_name_tab[i]; i++)
+            free(data->links_name_tab[i]);
+        free(data->links_name_tab);
+        data->links_name_tab = NULL;
 
+        if (data->recursive)
+        {
+            for (int i = 0; data->img_name_tab[i]; i++)
+            {
+                // open name in dir
+                if (!ft_openfile_in_dir(data, i))
+                    return (freeaddrinfo(result), false);
 
+                if (!request_to_get_image(data, rp, result, i))
+                    return (freeaddrinfo(result), false);
+    
+                if (!ft_iterative_download(data, data->site_fd))
+                    return (freeaddrinfo(result), false);
+
+                    // ft_recursive_download(data);            
+            }
+        }
+        else
+            // ft_iterative_download(data);
+            // download en iteratif
+    
+    freeaddrinfo(result);
+    
 
     return (true);
 }

@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/types.h>
+#include <fcntl.h>  
 
 # include  "openssl/bio.h"
 # include  "openssl/ssl.h"
@@ -23,11 +24,13 @@ typedef struct s_spider
 
     int    deepness;
     int    site_fd;
+    int    img_fd;
     char   *hostname;
     char   pathName[1024];
     bool   pathNameSelected;
     bool   deepnessSelected;
     char   *html_page;
+    char   *img;
     char   **img_name_tab;
     char   **links_name_tab;
 }   t_spider;
@@ -109,3 +112,11 @@ bool    scrapper(t_spider *data);
 bool    ft_parse_links(char links[500]);
 bool    get_links(t_spider *data);
 bool    find_images(t_spider *data);
+
+bool    ft_recursive_download(t_spider *data);
+bool    ft_iterative_download(t_spider *data, int sfd);
+
+bool    request_to_get_image(t_spider *data, struct addrinfo *rp, struct addrinfo *result, int i);
+bool    ft_openfile_in_dir(t_spider *data, int i);
+
+
