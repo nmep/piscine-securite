@@ -114,8 +114,9 @@ bool is_dir(char *pathName)
 
     if (stat(pathName, &buffer) == -1)
         return (false);
-    if (buffer.st_mode & __S_IFDIR)
+    if (buffer.st_mode & __S_IFDIR)    
         return (true);
+    
     return (false);
 }
 

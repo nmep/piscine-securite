@@ -16,11 +16,6 @@ static bool parse_deepness(t_spider *data, char **av, int i)
             }
             data->deepness = ft_atoi(av[i]);
         }
-        else
-        {
-            fprintf(stderr, "Error invalid arg %s, default value a keeping\n", av[i]);
-            perror("Stat Error");
-        }
     }
     return (true);
 }
@@ -118,5 +113,7 @@ bool    arg_pars(char **av, t_spider *data)
     (void)data;
     if (!check_option(av, data))
         return (false);
+    if (!is_dir(data->pathName))
+        return (err_msg("The directory mentioned do not exist\n"), false);
     return (true);
 }

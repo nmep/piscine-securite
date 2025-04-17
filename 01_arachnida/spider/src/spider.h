@@ -113,8 +113,8 @@ bool    ft_parse_links(char links[500]);
 bool    get_links(t_spider *data);
 bool    find_images(t_spider *data);
 
-bool    ft_recursive_download(t_spider *data);
-bool    ft_iterative_download(t_spider *data, int sfd);
+bool    ft_http_recursive_download(t_spider *data, int sfd, int n_read);
+bool    ft_http_iterative_download(t_spider *data, int sfd);
 
 bool    request_to_get_image(t_spider *data, struct addrinfo *rp, struct addrinfo *result, int i);
 bool    ft_openfile_in_dir(t_spider *data, int i);
