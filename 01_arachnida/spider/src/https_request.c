@@ -175,8 +175,37 @@ bool    https_request(t_spider *data)
     }
     else
         fprintf(stderr,"No links found in the index\n");
+    
+    // free links tab
+    for (int i = 0; data->links_name_tab[i]; i++)
+        free(data->links_name_tab[i]);
+    free(data->links_name_tab);
+    data->links_name_tab = NULL;
+    
+    // https download
+    for (int i = 0; data->img_name_tab[i]; i++)
+    {
+        // get name
+        if (!ft_openfile_in_dir(data, i))
+            continue;;
+        if (!https_request_to_get_image(data, https_request_setup(bio, ssl, ctx, data), i))
+            continue;
+        // 
+    }
 
     SSL_CTX_free(ctx);
     BIO_free_all(bio);
     return (true);
+}
+
+BIO *https_request_setup(BIO *bio, SSL *ssl, SSL_CTX *ctx, t_spider *data)
+{
+    bio = seting_up_bio_object(&ssl, ctx, data);
+    if (!bio)
+        return (SSL_CTX_free(ctx), NULL);
+    if (!open_secure_connection(bio, data, ctx))
+        return (free_data(bio, ctx), NULL);
+    if (!check_valid_certificate(ssl, ctx, bio))
+        return (free_data(bio, ctx), NULL);
+    return (bio);
 }

@@ -97,6 +97,10 @@ bool    send_request(t_spider *data, int sfd, char *path);
 /*  ############################################################# */
 
 bool    https_request(t_spider *data);
+BIO     *https_request_setup(BIO *bio, SSL *ssl, SSL_CTX *ctx, t_spider *data);
+bool    bio_write_to_url(t_spider *data, BIO *bio, char *url);
+bool    bio_read(t_spider *data, BIO *bio);
+
 
 
 /*  ############################################################# */
@@ -116,7 +120,9 @@ bool    find_images(t_spider *data);
 bool    ft_http_recursive_download(t_spider *data, int sfd, int n_read);
 bool    ft_http_iterative_download(t_spider *data, int sfd);
 
-bool    request_to_get_image(t_spider *data, struct addrinfo *rp, struct addrinfo *result, int i);
+bool    http_request_to_get_image(t_spider *data, struct addrinfo *rp, struct addrinfo *result, int i);
 bool    ft_openfile_in_dir(t_spider *data, int i);
+
+bool    https_request_to_get_image(t_spider *data, BIO *bio, int i);
 
 

@@ -134,53 +134,57 @@ bool    scrapper(t_spider *data)
             return (freeaddrinfo(result), close(data->site_fd), false);
         if (!getHtmlPage(data, data->site_fd))
             return (freeaddrinfo(result), close(data->site_fd), false);
+    
         free(data->html_page);
         data->html_page = NULL;
         close(data->site_fd);
 
         if (!request_on_other_http_page(data, result, rp))
             return (freeaddrinfo(result), false);
-    }
+        
+        // free links tab
+        for (int i = 0; data->links_name_tab[i]; i++)
+            free(data->links_name_tab[i]);
+        free(data->links_name_tab);
+        data->links_name_tab = NULL;
 
-    for (int i = 0; data->links_name_tab[i]; i++)
-        free(data->links_name_tab[i]);
-    free(data->links_name_tab);
-    data->links_name_tab = NULL;
-
-    if (data->recursive)
-    {
-        for (int i = 0; data->img_name_tab[i]; i++)
+        // http download
+        if (data->recursive)
         {
-            // open name in dir
-            if (!ft_openfile_in_dir(data, i))
-                return (freeaddrinfo(result), false);                   
-            if (!request_to_get_image(data, rp, result, i))
-                continue ;
+            for (int i = 0; data->img_name_tab[i]; i++)
+            {
+                // open name in dir
+                if (!ft_openfile_in_dir(data, i))
+                    return (freeaddrinfo(result), false);                   
+                if (!http_request_to_get_image(data, rp, result, i))
+                    continue ;
+    
+                if (!ft_http_recursive_download(data, data->site_fd, 0))
+                    continue ;
 
-            if (!ft_http_recursive_download(data, data->site_fd, 0))
-                continue ;
+                close(data->img_fd);
+                    // ft_recursive_download(data);            
+            }
+        }
+        else
+        {
+            for (int i = 0; data->img_name_tab[i]; i++)
+            {
+                // open name in dir
+                if (!ft_openfile_in_dir(data, i))
+                    return (freeaddrinfo(result), false);
+                if (!http_request_to_get_image(data, rp, result, i))
+                    continue ;
+    
+                if (!ft_http_iterative_download(data, data->site_fd))
+                    continue ;
 
-            close(data->img_fd);
-                // ft_recursive_download(data);            
+                close(data->img_fd);
+                    // ft_recursive_download(data);            
+            }
         }
     }
-    else
-    {
-        for (int i = 0; data->img_name_tab[i]; i++)
-        {
-            // open name in dir
-            if (!ft_openfile_in_dir(data, i))
-                return (freeaddrinfo(result), false);                   
-            if (!request_to_get_image(data, rp, result, i))
-                continue ;
 
-            if (!ft_http_iterative_download(data, data->site_fd))
-                continue ;
-
-            close(data->img_fd);
-                // ft_recursive_download(data);            
-        }
-    }
     freeaddrinfo(result);
     return (true);
 }

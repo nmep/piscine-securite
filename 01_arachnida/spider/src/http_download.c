@@ -1,5 +1,14 @@
 #include "spider.h"
 
+/*  ############################################################# */
+/* #                                                             #*/
+/* #                                                             #*/
+/* #                         HTTP                                #*/
+/* #                                                             #*/
+/* #                                                             #*/
+/*  ############################################################# */
+
+
 static  char    *ft_get_file_name(t_spider *data, int i)
 {
     char *fileName = NULL;
@@ -37,7 +46,7 @@ bool    ft_openfile_in_dir(t_spider *data, int i)
     data->img = ft_get_file_name(data, i);
     if (!data->img)
         return (false);
-    // open
+
     data->img_fd = open(data->img, O_CREAT | W_OK, 0644);
     if (data->img_fd == -1)
         return (free(data->img), fprintf(stderr, "Error: open %s\n", strerror(errno)), true);
@@ -45,7 +54,7 @@ bool    ft_openfile_in_dir(t_spider *data, int i)
     return (true);
 }
 
-bool    request_to_get_image(t_spider *data, struct addrinfo *rp, struct addrinfo *result, int i)
+bool    http_request_to_get_image(t_spider *data, struct addrinfo *rp, struct addrinfo *result, int i)
 {
     for (rp = result; rp != NULL; rp = rp->ai_next) {
         data->site_fd = socket(rp->ai_family, rp->ai_socktype, 
@@ -126,3 +135,6 @@ bool    ft_http_recursive_download(t_spider *data, int sfd, int n_read)
     printf("lecture n %d j'ecrit = %d char\n", n_read, bytesRead);
     return (true);
 }
+
+
+

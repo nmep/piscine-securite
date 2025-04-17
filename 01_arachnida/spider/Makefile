@@ -15,7 +15,9 @@ SRC = src/arg_parsing.c \
 	src/main.c \
 	src/socket.c \
 	src/tools.c \
-	src/download.c
+	src/http_download.c \
+	src/https_download.c
+
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 DEP = $(patsubst $(SRC_DIR)/%.c, $(DEP_DIR)/%.d, $(SRC))
 
