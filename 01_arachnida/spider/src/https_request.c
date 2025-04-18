@@ -119,6 +119,7 @@ bool    bio_read(t_spider *data, BIO *bio)
     }
     if (data->html_page == NULL)
         return (false);
+    
     if (!get_links(data))
         return (false);
     if (!find_images(data))
@@ -158,19 +159,16 @@ bool    https_request(t_spider *data)
         return (free_data(bio, ctx));
     if (!bio_read(data, bio))
         return (free_data(bio, ctx));
+    if (strstr(data->html_page, "302 Moved Temporarily"))
+        return (free_data(bio, ctx), err_msg("Redirection detected\n"));
     BIO_free_all(bio);
+    bio = NULL;
 
     // tant que je n'ai pas lu assez de page je continue
-    printf("il y a %d liens\n", ft_strlen_2D(data->links_name_tab));
-    for (int i = 0; data->links_name_tab[i]; i++)
-    {
-        printf("link[%d] = %s\n", i, data->links_name_tab[i]);
-    }
     if (data->links_name_tab)
     {
         for (int i = 0; data->links_name_tab[i] && data->deepness > 0; i++)
         {
-
             bio = seting_up_bio_object(&ssl, ctx, data);
             if (!bio)
                 return (SSL_CTX_free(ctx), false);
@@ -181,11 +179,16 @@ bool    https_request(t_spider *data)
             // read
             printf("requete sur %s\n", data->links_name_tab[i]);
             if (!bio_write_to_url(data, bio, data->links_name_tab[i]))
+            {
+                BIO_free_all(bio);
                 continue;
+            }
             if (!bio_read(data, bio))
                 return (free_data(bio, ctx));
+            BIO_free_all(bio);
             data->deepness--;
         }
+        bio = NULL;
         for (int i = 0; data->links_name_tab[i]; i++)
             free(data->links_name_tab[i]);
         free(data->links_name_tab);
@@ -209,8 +212,10 @@ bool    https_request(t_spider *data)
         // 
     }
 
-    SSL_CTX_free(ctx);
-    BIO_free_all(bio);
+    if (ctx)
+        SSL_CTX_free(ctx);
+    if (bio)
+        BIO_free_all(bio);
     return (true);
 }
 

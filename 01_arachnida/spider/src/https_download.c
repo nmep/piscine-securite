@@ -69,18 +69,19 @@ bool    https_request_to_get_image(t_spider *data, BIO *bio, int i)
     if (data->recursive)
     {
         if (!bio_write_to_url(data, bio, data->img_name_tab[i]))
-            return (false);
+            return (BIO_free_all(bio), false);
         if (!https_skip_image_header(bio, bytesRead, data->img_fd))
-            return (false);
+            return (BIO_free_all(bio), false);
         ft_https_recursive_download(bio, data->img_fd);
     }
     else
     {
         if (!bio_write_to_url(data, bio, data->img_name_tab[i]))
-           return (false);
+           return (BIO_free_all(bio), false);
         if (!https_skip_image_header(bio, bytesRead, data->img_fd))
-            return (false);
+            return (BIO_free_all(bio), false);
         ft_https_iterative_download(bio, data->img_fd);
     }
+    BIO_free_all(bio);
     return (true);
 }
