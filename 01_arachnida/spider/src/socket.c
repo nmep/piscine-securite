@@ -43,7 +43,7 @@ bool    getHtmlPage(t_spider *data, int sfd)
     while ((bytesRead = recv(sfd, buff, 4095, 0)) > 0)
     {
         buff[bytesRead] = 0;
-        data->html_page = strjoin(data->html_page, buff, true);
+        data->html_page = strjoin(data->html_page, buff, true, false);
         if (!data->html_page)   
             return (false);
     }

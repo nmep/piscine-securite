@@ -34,7 +34,7 @@ static  char    *ft_get_file_name(t_spider *data, int i)
         k++;
     }
     fileName[k] = 0;
-    fileName_and_Path = strjoin(data->pathName, fileName, false);
+    fileName_and_Path = strjoin(data->pathName, fileName, false, false);
     if (!fileName_and_Path)
         return (free(fileName), err_msg("Error join malloc: FileNameAndPath\n"), NULL);
     free(fileName);
@@ -104,10 +104,7 @@ bool    ft_http_iterative_download(t_spider *data, int sfd)
     if (!skip_image_header(sfd, bytesRead, data->img_fd))
         return (false);
     while ((bytesRead = recv(sfd, buff, 4096, 0)) > 0)
-    {
-        printf("tour de boucle\n");
         write(data->img_fd, buff, bytesRead);
-    }
     if (bytesRead == -1)
         return (fprintf(stderr, "Error recv: %s\n", strerror(errno)), false);
     return (true);
@@ -118,7 +115,6 @@ bool    ft_http_recursive_download(t_spider *data, int sfd, int n_read)
     unsigned char    buff[4096];
     int     bytesRead = 0;
 
-    printf("n read = %d\n", n_read);
     if (n_read == 0)
     {
         if (!skip_image_header(sfd, bytesRead, data->img_fd))
@@ -128,11 +124,9 @@ bool    ft_http_recursive_download(t_spider *data, int sfd, int n_read)
         return (fprintf(stderr, "Error recv: %s\n", strerror(errno)), false);
     if (bytesRead > 0)
     {
-        printf("lecture n %d br = %d\n", n_read, bytesRead);
         write(data->img_fd, buff, bytesRead);
         ft_http_recursive_download(data, sfd, n_read + 1);
     }
-    printf("lecture n %d j'ecrit = %d char\n", n_read, bytesRead);
     return (true);
 }
 

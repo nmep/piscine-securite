@@ -85,7 +85,5 @@ bool    find_images(t_spider *data)
     if (!find_images_mimes(data, ".bmp", 4))
         return (false);
 
-    if (!data->img_name_tab)
-        return (fprintf(stderr, "no images found\n\n"), true);
     return (true);
 }

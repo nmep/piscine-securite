@@ -122,7 +122,6 @@ bool is_dir(char *pathName)
 
 void    print_data(t_spider data)
 {
-    printf("\n\n");
     printf("hostname = %s\n", data.hostname);
     printf("pathName = %s\n", data.pathName);
     printf("deepness = %d\n", data.deepness);
@@ -133,7 +132,7 @@ void    print_data(t_spider data)
 }
 
 // la fonction ne free pas
-char    *strjoin(char *dest, char *src, bool free_dest)
+char    *strjoin(char *dest, char *src, bool free_dest, bool free_src)
 {
     char *str = calloc((ft_strlen(dest) + ft_strlen(src) + 1), sizeof(char));
     if (!str)
@@ -146,6 +145,8 @@ char    *strjoin(char *dest, char *src, bool free_dest)
     if (free_dest)
         ft_free(dest);
     strcat(str, src);
+    if (free_src)
+        ft_free(src);
     return (str);
 }
 

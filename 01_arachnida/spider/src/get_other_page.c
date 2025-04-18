@@ -1,5 +1,6 @@
 #include "spider.h"
 
+
 bool    get_links(t_spider *data)
 {
     // occurence sur ahref
@@ -9,6 +10,8 @@ bool    get_links(t_spider *data)
     char    *occ = start_navbar;
     char    buffer[500];
     int     link_len;
+    char    *temp;
+
 
     // est ce qu'il y a plusieurs navbar ?
     while ((start_navbar = strstr(start_navbar, "<nav")))
@@ -35,16 +38,30 @@ bool    get_links(t_spider *data)
                 if (checkDouble(data->links_name_tab, buffer))
                 {
                     ft_parse_links(buffer);
+
+                    temp = strjoin(data->url, buffer, 0, 0);
+                    if (!temp)
+                        return (err_msg("Err malloc url with link\n"));
+                    if (!checkDouble(data->links_name_tab, temp))
+                    {
+                        occ++;
+                        free(temp);
+                        continue;
+                    }
+                    free(temp);
+        
                     int links_name_tab_len = ft_strlen_2D(data->links_name_tab);
+                    
                     data->links_name_tab = realloc(data->links_name_tab, sizeof(char *) * (links_name_tab_len + 2));
                     if (!data->links_name_tab)
                         return (err_msg("Error syscall, realloc, links name\n"));
                     data->links_name_tab[links_name_tab_len] = 0;
                     data->links_name_tab[links_name_tab_len + 1] = 0;
-                    // allocate the new links for the table
+                    
                     data->links_name_tab[links_name_tab_len] = malloc(sizeof(char) * (link_len + 1));
                     if (!data->links_name_tab[links_name_tab_len])
                        return (err_msg("Error syscall, malloc, links name\n"));
+                    
                     strcpy(data->links_name_tab[links_name_tab_len], buffer);
                 }
                 else
@@ -62,6 +79,20 @@ bool    get_links(t_spider *data)
         }
         start_navbar++;
         end_navbar++;
+    }
+    if (data->links_name_tab)
+    {
+        // si il y a un lien qui ne se termine pas pas un . je le join a l'url
+        for (int i = 0; data->links_name_tab[i]; i++)
+        {
+            if (data->links_name_tab[i][0] != '/')
+                continue ;
+            
+                // join le liens avec l'url
+            data->links_name_tab[i] = strjoin(data->url, data->links_name_tab[i], 0, 1);
+            if (!data->links_name_tab[i])
+                return (err_msg("Err malloc url with link\n"));
+        }
     }
     return (true);
 }

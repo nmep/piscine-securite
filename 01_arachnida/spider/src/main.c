@@ -91,6 +91,9 @@ bool    init_data(t_spider *data, char **av, int ac)
     ft_strcpy("./data", data->pathName);
     if (!Url_to_Hostname(data, av[ac - 1]))
         return (false);
+    if (strlen(av[ac - 1]) > 1024)
+        return (err_msg("The url is to long, it must be lesser then 1024\n"));
+    strcpy(data->url, av[ac - 1]);
     return (true);
 }
 

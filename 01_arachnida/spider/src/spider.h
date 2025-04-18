@@ -29,6 +29,7 @@ typedef struct s_spider
     char   pathName[1024];
     bool   pathNameSelected;
     bool   deepnessSelected;
+    char   url[1024];
     char   *html_page;
     char   *img;
     char   **img_name_tab;
@@ -72,7 +73,7 @@ int     strstr_index(char *str, char *to_find);
 bool    checkDouble(char **links_name_tab, char *new_link);
 
 void    ft_free(void *ptr);
-char    *strjoin(char *dest, char *src, bool free_dest);
+char    *strjoin(char *dest, char *src, bool free_dest, bool free_src);
 
 
 /*  ############################################################# */
