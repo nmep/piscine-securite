@@ -37,6 +37,14 @@ def scorpion(valid_files):
 
 
 if __name__ == "__main__":
-    valid_files = []
-    parsing(valid_files)
-    scorpion(valid_files)
+    # valid_files = []
+    # parsing(valid_files)
+    # scorpion(valid_files)
+    try:
+        inp = input("text: ")
+        print(f"inp = {inp}")
+    except KeyboardInterrupt:
+        print("\nError: KeyboardInterrupt detected")
+    except EOFError:
+        print("\nError: CTRL D detected")
+    print("Done")
