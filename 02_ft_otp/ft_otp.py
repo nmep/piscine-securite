@@ -1,5 +1,9 @@
 import argparse
 import string
+from hashlib import sha1
+import os
+import hmac
+import base64
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-g", help="save the hexadecimal key of 64bit length give in output as G, it can be a string or writed in a file")
@@ -46,10 +50,55 @@ def parsing():
 
 	if (args.k != "ft_otp.key"):
 		print("./ft_otp.py error: [-k] only ft_otp.key is accepted as input file")
+		exit(1)
+
+def counter():
+	file = ".counter.txt"
+
+	if os.path.exists(file):
+		try:
+			with open(file, 'r') as f:
+				val = int(f.read())
+		except Exception as e:
+			print(e)
+	else:
+		val = 0
+	val += 1
+
+	with open(file, 'w') as f:
+		f.write(str(val))
+	return val
+
+def sha1_algo(count):
+	key = bytes("toto", 'UTF-8')
+	msg = bytes(str(count), 'UTF-8')
+
+	digester = hmac.new(key, msg, sha1)
+
+	signature1 = digester.digest()
+
+	signature2 = base64.urlsafe_b64encode(signature1).decode('UTF-8')
+	return str(signature2)
+
+
+def hotp_algo(count):
+	print(f"counter = {count}")
+	hs = sha1_algo(count)
+	hs = hs[:20]
+	print(f"res hash sh1 = {hs}")
 	
+
 def main():
 	parsing()
-	# print(1)
+	# faire l'algo que si k est demande
+
+	hotp_algo(counter())
+	print(1)
+
 
 if __name__ == "__main__":
 	main()
+
+
+# sur hs je prend le offsetBits qui est les 4 bit de poids faible de hs[19] (sa valeur est donc entre 0 et 15 inclus)
+# je peux aussi prendre 
