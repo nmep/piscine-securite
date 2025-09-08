@@ -80,12 +80,21 @@ def sha1_algo(count):
 	signature2 = base64.urlsafe_b64encode(signature1).decode('UTF-8')
 	return str(signature2)
 
-
 def hotp_algo(count):
 	print(f"counter = {count}")
 	hs = sha1_algo(count)
 	hs = hs[:20]
 	print(f"res hash sh1 = {hs}")
+	offset = ord(hs[19]) & 0xf
+	
+	bin_code = (hs[offset] & 0x7f) << 24 \
+		| (hs[offset+1] & 0xff) << 16 \
+		| (hs[offset+2] & 0xff) << 8 \
+		| (hs[offset+3] & 0xff)
+	# je dois mettre qqc en big endian 
+	# je dois calculer une valeur avec deux truc que je connais pas
+	#  puis faire le calcul voir rfc
+	print(f"offset = {offset}")	
 	
 
 def main():
