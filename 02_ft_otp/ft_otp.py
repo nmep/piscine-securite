@@ -87,20 +87,21 @@ def hotp_algo(count):
 	print(f"res hash sh1 = {hs}")
 	offset = ord(hs[19]) & 0xf
 	
-	bin_code = (hs[offset] & 0x7f) << 24 \
-		| (hs[offset+1] & 0xff) << 16 \
-		| (hs[offset+2] & 0xff) << 8 \
-		| (hs[offset+3] & 0xff)
+	bin_code = (ord(hs[offset]) & 0x7f) << 24 \
+		| (ord(hs[offset+1]) & 0xff) << 16 \
+		| (ord(hs[offset+2]) & 0xff) << 8 \
+		| (ord(hs[offset+3]) & 0xff)
 	# je dois mettre qqc en big endian 
 	# je dois calculer une valeur avec deux truc que je connais pas
 	#  puis faire le calcul voir rfc
-	print(f"offset = {offset}")	
-	
+	print(f"bin code = {bin_code}")
+	print(f"hotp code = {bin_code % 1E6}")
+
 
 def main():
 	parsing()
 	# faire l'algo que si k est demande
-
+ 
 	hotp_algo(counter())
 	print(1)
 
