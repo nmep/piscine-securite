@@ -1,9 +1,10 @@
-import argparse
+import argparse, hmac, binascii, time
 from hashlib import sha1
-import hmac, binascii
+from cryptography.fernet import Fernet
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-g", help="save the hexadecimal key of 64bit length give in output as G, it can be a string or writed in a file")
+parser.add_argument("-d", action="store_true", help="Decrypt file D who was crypted by -g")
 parser.add_argument("-k", help="generates a new temporary password based on the key given as K (it must be the ft_otp.key created by -g) and prints it on the standard output")
 args = parser.parse_args()
 
@@ -32,6 +33,10 @@ def parsing() -> None:
 			print("Key was successfully saved in ft_otp.key.")
 		except Exception as e:
 			print(f"./ft_otp.py error: {e}")
+		
+	if args.d:
+		print("true d")
+		decrypt_file()
 
 def counter() -> int:
 	file = ".counter.txt"
@@ -68,10 +73,53 @@ def get_key_from_file(key_file: str) -> bytes:
 		exit(1)
 	return binascii.unhexlify(key)
 
+def encrypt_file():
+	#load the key from .key file
+	try:
+		with open('.filekey.key', 'rb') as f:
+			key = f.read()
+		# Create a Fernet object using the key
+		fernet = Fernet(key)
+	except Exception as e:
+		print(e)
+		return
+
+	try:
+		with open('ft_otp.key', 'rb') as f:
+			original = f.read()
+		encrypted = fernet.encrypt(original)
+
+		with open('ft_otp.key', 'wb') as f:
+			f.write(encrypted)
+	except Exception as e:
+		print(e)
+		return
+
+def decrypt_file():
+	#load the key from .key file
+	print("qwerqwr")
+	with open('.filekey.key', 'rb') as f:
+		key = f.read()
+	# Create a Fernet object using the key
+	fernet = Fernet(key)
+
+	
+	with open('ft_otp.key', 'rb') as f:
+		encrypted = f.read()
+	
+	decrypted = fernet.decrypt(encrypted)
+
+	with open('ft_otp.key', 'wb') as f:
+		f.write(decrypted)
+
 def main() -> None:
 	parsing()
+	if args.g:
+		encrypt_file()
 	if args.k:
+		decrypt_file()
 		key = get_key_from_file(args.k)
+		encrypt_file()
 		count = counter()
 		hotp_algo(key, count)
 
