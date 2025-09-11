@@ -35,8 +35,8 @@ def parsing() -> None:
 			print(f"./ft_otp.py error: {e}")
 		
 	if args.d:
-		print("true d")
 		decrypt_file()
+		print("file decrypted !")
 
 def counter() -> int:
 	file = ".counter.txt"
@@ -80,11 +80,7 @@ def encrypt_file():
 			key = f.read()
 		# Create a Fernet object using the key
 		fernet = Fernet(key)
-	except Exception as e:
-		print(e)
-		return
 
-	try:
 		with open('ft_otp.key', 'rb') as f:
 			original = f.read()
 		encrypted = fernet.encrypt(original)
@@ -96,21 +92,24 @@ def encrypt_file():
 		return
 
 def decrypt_file():
-	#load the key from .key file
-	print("qwerqwr")
-	with open('.filekey.key', 'rb') as f:
-		key = f.read()
-	# Create a Fernet object using the key
-	fernet = Fernet(key)
+	try:
+		#load the key from .key file
+		with open('.filekey.key', 'rb') as f:
+			key = f.read()
+		# Create a Fernet object using the key
+		fernet = Fernet(key)
 
-	
-	with open('ft_otp.key', 'rb') as f:
-		encrypted = f.read()
-	
-	decrypted = fernet.decrypt(encrypted)
+		with open('ft_otp.key', 'rb') as f:
+			encrypted = f.read()
+		
+		decrypted = fernet.decrypt(encrypted)
 
-	with open('ft_otp.key', 'wb') as f:
-		f.write(decrypted)
+		with open('ft_otp.key', 'wb') as f:
+			f.write(decrypted)
+	except Exception as e:
+		print(e)
+		exit(1)
+		return
 
 def main() -> None:
 	parsing()
